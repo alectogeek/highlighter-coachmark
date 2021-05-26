@@ -90,6 +90,9 @@ class CoachMark {
     BoxShape markShape = BoxShape.circle,
     Duration duration,
     VoidCallback onClose,
+    HitTestBehavior hitTestBehavior,
+    bool closeOnTap,
+    VoidCallback onTransparentSectionTap,
   }) async {
     // Prevent from showing multiple marks at the same time
     if (_isVisible) {
@@ -111,6 +114,9 @@ class CoachMark {
                 markShape: markShape,
                 doClose: close,
                 children: children,
+                hitTestBehavior: hitTestBehavior,
+                closeOnTap: closeOnTap,
+                onTransparentSectionTap: onTransparentSectionTap,
               ),
         );
 
@@ -146,6 +152,9 @@ class _HighlighterCoachMarkWidget extends StatefulWidget {
     @required this.children,
     @required this.doClose,
     @required this.bgColor,
+    this.hitTestBehavior = HitTestBehavior.translucent,
+    this.closeOnTap = true,
+    this.onTransparentSectionTap,
   }) : super(key: key);
 
   final Rect markRect;
@@ -153,6 +162,9 @@ class _HighlighterCoachMarkWidget extends StatefulWidget {
   final List<Widget> children;
   final VoidCallback doClose;
   final Color bgColor;
+  final HitTestBehavior hitTestBehavior;
+  final bool closeOnTap;
+  final VoidCallback onTransparentSectionTap;
 
   @override
   _HighlighterCoachMarkState createState() => new _HighlighterCoachMarkState();
@@ -213,47 +225,66 @@ class _HighlighterCoachMarkState extends State<_HighlighterCoachMarkWidget>
     return AnimatedBuilder(
         animation: _controller,
         builder: (BuildContext context, Widget child) {
-          return Stack(
-            children: <Widget>[
-              ClipPath(
-                clipper: clipper,
-                child: BackdropFilter(
-                  filter: ui.ImageFilter.blur(
-                      sigmaX: _blurAnimation.value,
-                      sigmaY: _blurAnimation.value),
-                  child: Container(
-                    color: Colors.transparent,
+          return GestureDetector(
+            behavior: widget.hitTestBehavior,
+            onTap: () {
+              if (widget.closeOnTap) {
+                _onPointer(null);
+              }
+              if (widget.onTransparentSectionTap != null) {
+                widget.onTransparentSectionTap();
+              }
+            },
+            child: Stack(
+              children: <Widget>[
+                ClipPath(
+                  clipper: clipper,
+                  child: BackdropFilter(
+                    filter: ui.ImageFilter.blur(
+                        sigmaX: _blurAnimation.value,
+                        sigmaY: _blurAnimation.value),
+                    child: Container(
+                      color: Colors.transparent,
+                    ),
                   ),
                 ),
-              ),
-              _CoachMarkLayer(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: _onPointer,
-                onPointerMove: _onPointer,
-                onPointerUp: _onPointer,
-                onPointerCancel: _onPointer,
-                markPosition: position,
-                child: CustomPaint(
-                  child: Opacity(
-                      opacity: _opacityAnimation.value,
-                      child: Material(
-                          type: MaterialType.transparency,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: widget.children,
-                          ))),
-                  painter: _CoachMarkPainter(
-                    rect: position,
-                    shadow: BoxShadow(
-                        color:
-                            widget.bgColor.withOpacity(_opacityAnimation.value),
-                        blurRadius: 8.0),
-                    clipper: clipper,
-                    coachMarkShape: widget.markShape,
+                _CoachMarkLayer(
+                  behavior: widget.hitTestBehavior,
+                  onPointerDown: widget.closeOnTap ? _onPointer : null,
+                  onPointerMove: widget.closeOnTap ? _onPointer : null,
+                  onPointerUp: widget.closeOnTap ? _onPointer : null,
+                  onPointerCancel: widget.closeOnTap ? _onPointer : null,
+                  markPosition: position,
+                  child: GestureDetector(
+                    behavior: widget.hitTestBehavior,
+                    onTap: () {
+                      if (widget.closeOnTap) {
+                        _onPointer(null);
+                      }
+                    },
+                    child: CustomPaint(
+                      child: Opacity(
+                          opacity: _opacityAnimation.value,
+                          child: Material(
+                              type: MaterialType.transparency,
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: widget.children,
+                              ))),
+                      painter: _CoachMarkPainter(
+                        rect: position,
+                        shadow: BoxShadow(
+                            color:
+                                widget.bgColor.withOpacity(_opacityAnimation.value),
+                            blurRadius: 0.0),
+                        clipper: clipper,
+                        coachMarkShape: widget.markShape,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         });
   }
@@ -357,7 +388,7 @@ class _CoachMarkClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     return Path.combine(ui.PathOperation.difference,
-        Path()..addRect(Offset.zero & size), Path()..addOval(rect));
+        Path()..addRect(Offset.zero & size), Path()..addRect(rect));
   }
 
   @override
@@ -383,11 +414,12 @@ class _CoachMarkPainter extends CustomPainter {
     canvas.saveLayer(Offset.zero & size, Paint());
     canvas.drawColor(shadow.color, BlendMode.dstATop);
     var paint = shadow.toPaint()..blendMode = BlendMode.clear;
+    // var paint = Paint()..color = Colors.transparent;
 
     switch (coachMarkShape) {
       case BoxShape.rectangle:
         canvas.drawRRect(
-            RRect.fromRectAndRadius(rect, Radius.circular(circle.width * 0.3)),
+            RRect.fromRectAndRadius(rect, Radius.circular(circle.width / 14.786)),
             paint);
         break;
       case BoxShape.circle:
