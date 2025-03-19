@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.purple,
-        accentColor: const Color(0xFFF850DD),
+        // accentColor: const Color(0xFFF850DD),
       ),
       home: FriendsListPage(),
     );
@@ -31,7 +31,7 @@ class FriendsListPage extends StatefulWidget {
 
 class _FriendsListPageState extends State<FriendsListPage> {
   List<Friend> _friends = [];
-  ScrollController _scrollController;
+  late ScrollController _scrollController;
   GlobalKey _fabKey = GlobalObjectKey("fab");
   GlobalKey _tileKey = GlobalObjectKey("tile_2");
 
@@ -44,7 +44,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
 
   Future<void> _loadFriends() async {
     http.Response response =
-        await http.get('https://randomuser.me/api/?results=5');
+        await http.get(Uri.parse('https://randomuser.me/api/?results=5'));
 
     setState(() {
       _friends = Friend.allFromResponse(response.body);
@@ -58,14 +58,14 @@ class _FriendsListPageState extends State<FriendsListPage> {
   //Here is example of CoachMark usage
   void showCoachMarkFAB() {
     CoachMark coachMarkFAB = CoachMark();
-    RenderBox target = _fabKey.currentContext.findRenderObject();
+    RenderBox target = _fabKey.currentContext!.findRenderObject() as RenderBox;
 
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
     markRect = Rect.fromCircle(
         center: markRect.center, radius: markRect.longestSide * 0.6);
 
     coachMarkFAB.show(
-        targetContext: _fabKey.currentContext,
+        targetContext: _fabKey.currentContext!,
         markRect: markRect,
         children: [
           Center(
@@ -76,7 +76,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                     color: Colors.white,
                   )))
         ],
-        duration: null,
+        duration: Duration(seconds: 3),
         onClose: () {
           Timer(Duration(seconds: 3), () => showCoachMarkTile());
         });
@@ -86,13 +86,13 @@ class _FriendsListPageState extends State<FriendsListPage> {
   //One more example you can see in FriendDetailsPage - showCoachMarkBadges()
   void showCoachMarkTile() {
     CoachMark coachMarkTile = CoachMark();
-    RenderBox target = _tileKey.currentContext.findRenderObject();
+    RenderBox target = _tileKey.currentContext!.findRenderObject() as RenderBox;
 
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
     markRect = markRect.inflate(5.0);
 
     coachMarkTile.show(
-        targetContext: _fabKey.currentContext,
+        targetContext: _fabKey.currentContext!,
         markRect: markRect,
         markShape: BoxShape.rectangle,
         children: [
@@ -106,7 +106,12 @@ class _FriendsListPageState extends State<FriendsListPage> {
                     color: Colors.white,
                   )))
         ],
-        duration: Duration(seconds: 3));
+        // duration: Duration(seconds: 3),
+    );
+
+    Future.delayed(Duration(seconds: 3)).then((_) {
+       coachMarkTile.close();
+    });
   }
 
   @override
@@ -135,7 +140,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
               key: _fabKey,
               child: Icon(Icons.add),
               onPressed: () async {
-                Friend friend = await buildShowDialog(context);
+                Friend? friend = await buildShowDialog(context);
                 if (friend != null) {
                   setState(() {
                     _friends.add(friend);
@@ -154,7 +159,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
 
   Widget _buildFriendListTile(BuildContext context, int index) {
     var friend = _friends[index];
-    GlobalKey key = index == 2 ? _tileKey : null;
+    GlobalKey? key = index == 2 ? _tileKey : null;
 
     return ListTile(
       key: key,
@@ -180,7 +185,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
     );
   }
 
-  Future<Friend> buildShowDialog(BuildContext context) {
+  Future<Friend?> buildShowDialog(BuildContext context) {
     return showDialog<Friend>(
         context: context,
         builder: (BuildContext context) {
@@ -189,7 +194,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
               builder: (BuildContext context, AsyncSnapshot<Friend> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return SimpleDialog(
-                      title: _buildDialogAddFriend(snapshot.data));
+                      title: _buildDialogAddFriend(snapshot.data!));
                 } else {
                   return SimpleDialog(
                       title: Container(
@@ -205,7 +210,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
 
   Future<Friend> _loadRandomFriend() async {
     http.Response response =
-        await http.get('https://randomuser.me/api/?results=1');
+        await http.get(Uri.parse('https://randomuser.me/api/?results=1'));
     var friends = Friend.allFromResponse(response.body);
     return friends.first;
   }

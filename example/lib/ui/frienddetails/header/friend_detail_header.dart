@@ -9,7 +9,7 @@ class FriendDetailHeader extends StatelessWidget {
 
   FriendDetailHeader(
     this.friend, {
-    @required this.avatarTag,
+    required this.avatarTag,
   });
 
   final Friend friend;
@@ -41,7 +41,7 @@ class FriendDetailHeader extends StatelessWidget {
 
   Widget _buildFollowerInfo(TextTheme textTheme) {
     var followerStyle =
-        textTheme.subhead.copyWith(color: const Color(0xBBFFFFFF));
+        TextStyle(color: const Color(0xBBFFFFFF));
 
     return new Padding(
       padding: const EdgeInsets.only(top: 16.0),
@@ -72,7 +72,7 @@ class FriendDetailHeader extends StatelessWidget {
         children: <Widget>[
           _createPillButton(
             'HIRE ME',
-            backgroundColor: theme.accentColor,
+            backgroundColor: const Color(0xFFF850DD),
           ),
           new DecoratedBox(
             decoration: new BoxDecoration(

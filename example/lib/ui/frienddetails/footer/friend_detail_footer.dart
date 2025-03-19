@@ -16,9 +16,9 @@ class FriendShowcase extends StatefulWidget {
 
 class _FriendShowcaseState extends State<FriendShowcase>
     with TickerProviderStateMixin {
-  List<Tab> _tabs;
-  List<Widget> _pages;
-  TabController _controller;
+  late List<Tab> _tabs;
+  late List<Widget> _pages;
+  late TabController _controller;
 
   @override
   void initState() {

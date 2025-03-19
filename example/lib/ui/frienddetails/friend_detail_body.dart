@@ -19,7 +19,7 @@ class FriendDetailBody extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: new Text(
             friend.location,
-            style: textTheme.subhead.copyWith(color: Colors.white),
+            style: TextStyle(color: Colors.white),
           ),
         ),
       ],
@@ -51,7 +51,7 @@ class FriendDetailBody extends StatelessWidget {
       children: <Widget>[
         new Text(
           friend.name,
-          style: textTheme.headline.copyWith(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         new Padding(
           padding: const EdgeInsets.only(top: 4.0),
@@ -64,7 +64,7 @@ class FriendDetailBody extends StatelessWidget {
                 'industry. Lorem Ipsum has been the industry\'s standard dummy '
                 'text ever since the 1500s.',
             style:
-                textTheme.body1.copyWith(color: Colors.white70, fontSize: 16.0),
+            TextStyle(color: Colors.white70, fontSize: 16.0),
           ),
         ),
         new Padding(
@@ -73,7 +73,7 @@ class FriendDetailBody extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             key: badgesRowKey,
             children: <Widget>[
-              _createCircleBadge(Icons.beach_access, theme.accentColor),
+              _createCircleBadge(Icons.beach_access, const Color(0xFFF850DD)),
               _createCircleBadge(Icons.cloud, Colors.white12),
               _createCircleBadge(Icons.shop, Colors.white12),
             ],

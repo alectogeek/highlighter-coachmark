@@ -3,10 +3,10 @@ import 'package:meta/meta.dart';
 
 class Friend {
   Friend({
-    @required this.avatar,
-    @required this.name,
-    @required this.email,
-    @required this.location,
+    required this.avatar,
+    required this.name,
+    required this.email,
+    required this.location,
   });
 
   final String avatar;

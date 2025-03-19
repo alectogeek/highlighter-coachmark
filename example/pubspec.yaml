@@ -10,14 +10,13 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ^3.6.0
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.8
   http: '>=0.11.3+12'
-  flutter_range_slider: "^0.0.4"
   highlighter_coachmark:
     path: ../
 

@@ -14,7 +14,7 @@ bool _coachMarkIsShown = false;
 class FriendDetailsPage extends StatefulWidget {
   FriendDetailsPage(
     this.friend, {
-    @required this.avatarTag,
+    required this.avatarTag,
   });
 
   final Friend friend;
@@ -72,12 +72,12 @@ class _FriendDetailsPageState extends State<FriendDetailsPage> {
   void showCoachMarkBadges() {
     CoachMark coachMarkBadges = CoachMark();
     RenderBox target =
-        FriendDetailBody.badgesRowKey.currentContext.findRenderObject();
+        FriendDetailBody.badgesRowKey.currentContext!.findRenderObject() as RenderBox;
 
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
 
     coachMarkBadges.show(
-        targetContext: FriendDetailBody.badgesRowKey.currentContext,
+        targetContext: FriendDetailBody.badgesRowKey.currentContext!,
         markRect: markRect.inflate(15.0),
         markShape: BoxShape.rectangle,
         children: [
@@ -131,8 +131,10 @@ class _FriendDetailsPageState extends State<FriendDetailsPage> {
                     ]),
                     Padding(
                         padding: EdgeInsets.only(top: 20.0),
-                        child: RaisedButton(
-                          onPressed: () {},
+                        child: MaterialButton(
+                          onPressed: () {
+                            coachMarkBadges.close();
+                          },
                           child: Text("Got it"),
                           color: Colors.blueGrey[600],
                         )),
@@ -147,12 +149,12 @@ class _FriendDetailsPageState extends State<FriendDetailsPage> {
   void showCoachMarkSliders() {
     CoachMark coachMarkSlider = CoachMark();
     RenderBox target =
-        SkillsShowcase.sliderKey.currentContext.findRenderObject();
+        SkillsShowcase.sliderKey.currentContext!.findRenderObject() as RenderBox;
 
     Rect markRect = target.localToGlobal(Offset.zero) & target.size;
 print("$markRect");
     coachMarkSlider.show(
-        targetContext: SkillsShowcase.sliderKey.currentContext,
+        targetContext: SkillsShowcase.sliderKey.currentContext!,
         markRect: markRect.inflate(5.0),
         markShape: BoxShape.rectangle,
         children: [
